@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import math, mpmath, urllib, json
+import math, mpmath, json
+from urllib import request, error
 
 EARTH_RADIUS = 6378137
 
@@ -34,9 +35,9 @@ def toTileCoords(lat, lon, zoom):
 def fetchJson(url):
     try:
         return json.loads(
-            urllib.request.urlopen(url).read()
+            request.urlopen(url).read()
         )
-    except urllib.error as e:
+    except error.URLError as e:
         if hasattr(e, "reason"):
             logging.error("Failed to reach the server: %s" % e.reason)
         elif hasattr(e, "code"):
