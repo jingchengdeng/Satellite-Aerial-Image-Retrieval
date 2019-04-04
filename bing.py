@@ -1,4 +1,4 @@
-import sys, math, logging
+import sys, math, logging, json, mpmath
 from urllib import request, error
 
 class Bing():
@@ -31,9 +31,9 @@ class Bing():
         return
     
     def getData(self):
-        res = self.getJson(self.dataPath + '?key=' + self.myKey)
-        if not "errorDetails" in res:
-            data = response["resourceSets"][0]["resources"][0]
+        res = self.getJson("%s?key=%s" % (self.dataPath, self.myKey))
+        if "errorDetails" not in res:
+            data = res["resourceSets"][0]["resources"][0]
             self.imageWidth = data["imageWidth"]
             self.imageHeight = data["imageHeight"]
             self.imageUrl = data["imageUrl"]
@@ -46,7 +46,7 @@ class Bing():
         return
     
     def latLonToXY(self, lat, lon):
-        x = mathradians(lon) * self.radius
+        x = math.radians(lon) * self.radius
         y = math.log(math.tan(math.radians(lat)) + mpmath.sec(math.radians(lat))) * self.radius
         return y, x
     
@@ -73,7 +73,7 @@ class Bing():
         center_lat, center_lon = self.xYtoLatLon((y_1 + y_2)/ 2, (x_1 + x_2)/ 2)
         zoom = self.zoomMax
         while True:
-            res = self.getJson(self.dataPath + center_lat + ',' + center_lon + "?zl=" + zoom + '&key=' + self.myKey)
+            res = self.getJson(self.dataPath + str(center_lat) + ',' + str(center_lon) + "?zl=" + str(zoom) + '&key=' + self.myKey)
             if 'errorDetails' not in res:
                 data = res["resourceSets"][0]["resources"][0]
                 if data["vintageEnd"]: break
