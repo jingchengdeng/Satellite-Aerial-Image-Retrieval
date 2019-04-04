@@ -47,7 +47,7 @@ class Bing():
     
     def latLonToXY(self, lat, lon):
         x = mathradians(lon) * self.radius
-        y = math.log(math.tan(math.radians(lat)) + mpmath.sec(math.radians(lat)) * self.radius
+        y = math.log(math.tan(math.radians(lat)) + mpmath.sec(math.radians(lat))) * self.radius
         return y, x
     
     def xYtoLatLon(self, y, x):
@@ -68,7 +68,7 @@ class Bing():
         return res
         
     def getMaxZoom(self, coord):
-        y_1, x_1 = self.latLonToXY(coord[[1], coord[0])
+        y_1, x_1 = self.latLonToXY(coord[1], coord[0])
         y_2, x_2 = self.latLonToXY(coord[3], coord[2])
         center_lat, center_lon = self.xYtoLatLon((y_1 + y_2)/ 2, (x_1 + x_2)/ 2)
         zoom = self.zoomMax
