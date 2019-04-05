@@ -146,4 +146,5 @@ class Bing():
         self.merge(left, right, top, bottom, zoom, result, numBlocks)
         fileName = input[4]
         result.save(fileName)
+        print("Completed.")
         return
