@@ -44,19 +44,19 @@ class Bing():
         else:
             logging.error("Unknown response")
             sys.exit()
-        print("data get")
+        # print("data get")
         return
     
     def latLonToXY(self, lat, lon):
         x = math.radians(lon) * self.radius
         y = math.log(math.tan(math.radians(lat)) + mpmath.sec(math.radians(lat))) * self.radius
-        print("calculate from lat lon to x y.")
+        # print("calculate from lat lon to x y.")
         return y, x
     
     def xYtoLatLon(self, y, x):
         lat = math.degrees(math.atan(math.sinh(y / self.radius)))
         lon = math.degrees(x / self.radius)
-        print("calculate from x y to lat lon")
+        # print("calculate from x y to lat lon")
         return lat, lon
         
     def quadKey(self, x, y, zoom):
@@ -69,7 +69,7 @@ class Bing():
             if y & mask:
                 digit += 2
             res += str(digit)
-        print("get quadKey = %s" % res)
+        # print("get quadKey = %s" % res)
         return res
         
     def getMaxZoom(self, coord):
@@ -86,7 +86,7 @@ class Bing():
                 logging.error("Unknown response")
                 sys.exit()
             zoom -= 1
-        print("get max zoom as %s" % zoom)
+        # print("get max zoom as %s" % zoom)
         return zoom
         
     def toBlockCoords(self, lat, lon, zoom):
@@ -97,14 +97,14 @@ class Bing():
         norm_lon = perimeter/2 + x
         y = norm_lat * blockPerAxis / perimeter
         x = norm_lon * blockPerAxis / perimeter
-        print("get block coords %s, %s" % (x, y))
+        # print("get block coords %s, %s" % (x, y))
         return math.floor(y), math.floor(x)
     
     def getBlockUrl(self, zoom, x, y, counter):
         quadkey = self.quadKey(x, y, zoom)
         url = self.imageUrl.replace("{subdomain}", self.imageUrlSubdomains[counter % self.numSubdomains])
         url = url.replace("{quadkey}", quadkey)
-        print("get url at %s" % url)
+        # print("get url at %s" % url)
         return url
         
     def getBlockImage(self, zoom, x, y, counter):
@@ -115,7 +115,7 @@ class Bing():
             logging.error(e)
             logging.error("Unable to download image with url:" + url)
             sys.exit()
-        print("block image get")
+        # print("block image get")
         return image
     
     def merge(self, left, right, top, bottom, zoom, result, numBlocks):
@@ -135,7 +135,7 @@ class Bing():
         low_lon, high_lon = (input[0], input[2]) if input[0] < input[2] else (input[2], input[0])
         bottom, left = self.toBlockCoords(low_lat, low_lon, zoom)
         top, right = self.toBlockCoords(high_lat, high_lon, zoom)
-        print(bottom, top, left, right)
+        # print(bottom, top, left, right)
         numBlocksOnX = right - left + 1
         numBlocksOnY = bottom - top + 1
         numBlocks = numBlocksOnX * numBlocksOnY
