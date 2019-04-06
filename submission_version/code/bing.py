@@ -46,22 +46,22 @@ class Bing():
             sys.exit()
         # print("data get")
         return
+
+    def lat2y(self, lat):
+        return math.log(math.tan(math.radians(lat)) + mpmath.sec(math.radians(lat))) * self.radius
+        
+    def lon2x(self, lon):
+        return math.radians(lon) * self.radius
+
+    def y2lat(self, y):
+        return math.degrees(math.atan(math.sinh(y / self.radius)))
     
-    def latLonToXY(self, lat, lon):
-        x = math.radians(lon) * self.radius
-        y = math.log(math.tan(math.radians(lat)) + mpmath.sec(math.radians(lat))) * self.radius
-        # print("calculate from lat lon to x y.")
-        return y, x
-    
-    def xYtoLatLon(self, y, x):
-        lat = math.degrees(math.atan(math.sinh(y / self.radius)))
-        lon = math.degrees(x / self.radius)
-        # print("calculate from x y to lat lon")
-        return lat, lon
+    def x2lon(self, x):
+        return math.degrees(x / self.radius)
         
     def quadKey(self, x, y, zoom):
         res = ""
-        for i in range(zoom, 0, -1):
+        for i in range(1, zoom + 1):
             digit = 0
             mask = 1 << (i - 1)
             if x & mask:
@@ -70,12 +70,12 @@ class Bing():
                 digit += 2
             res += str(digit)
         # print("get quadKey = %s" % res)
-        return res
+        return res[::-1]
         
     def getMaxZoom(self, coord):
-        y_1, x_1 = self.latLonToXY(coord[1], coord[0])
-        y_2, x_2 = self.latLonToXY(coord[3], coord[2])
-        center_lat, center_lon = self.xYtoLatLon((y_1 + y_2)/ 2, (x_1 + x_2)/ 2)
+        y_1, x_1 = self.lat2y(coord[1]), self.lon2x(coord[0])
+        y_2, x_2 = self.lat2y(coord[3]), self.lon2x(coord[2])
+        center_lat, center_lon = self.y2lat((y_1 + y_2)/ 2), self.x2lon((x_1 + x_2)/ 2)
         zoom = self.zoomMax
         while True:
             res = self.getJson(self.dataPath + '/' + str(center_lat) + ',' + str(center_lon) + "?zl=" + str(zoom) + '&key=' + self.myKey)
@@ -92,7 +92,7 @@ class Bing():
     def toBlockCoords(self, lat, lon, zoom):
         perimeter = math.pi * self.radius * 2
         blockPerAxis = 2 ** zoom
-        y, x = self.latLonToXY(lat, lon)
+        y, x = self.lat2y(lat), self.lon2x(lon)
         norm_lat = perimeter/2 - y
         norm_lon = perimeter/2 + x
         y = norm_lat * blockPerAxis / perimeter
